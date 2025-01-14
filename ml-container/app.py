@@ -4,6 +4,7 @@ from fpgrowth_py import fpgrowth
 import re
 import pickle
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 MIN_SUPPORT = 0.05
 MIN_CONFIDENCE = 0.1
@@ -51,9 +52,6 @@ class Recommender:
         song_uris = [self.name_to_id.get(song, None) for song in song_names]
         song_uris = [uri for uri in song_uris if uri is not None]
 
-
-        print(self.rules)
-        
         if not song_uris:
             return []
 
@@ -72,6 +70,7 @@ class Recommender:
 
 
 app = Flask(__name__)
+CORS(app)
 app.recommender = Recommender()
 
 
@@ -80,7 +79,21 @@ def recommend():
     data = request.get_json()
     songs = data.get("songs", [])
     recommendations = app.recommender.recommend_songs(songs)
-    return jsonify({"recommendations": recommendations})
+    
+    # Fetch version from an environment variable
+    version = os.getenv("VERSION", "unknown")
+
+    # Fetch the last modified date for the latest rules file
+    rules_file_path = app.recommender.get_latest_rules_file()
+    model_date = "unknown"
+    if rules_file_path:
+        model_date = str(pd.to_datetime(os.path.getmtime(rules_file_path), unit='s'))
+
+    return jsonify({
+        "songs": recommendations,
+        "version": version,
+        "model_date": model_date
+    })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

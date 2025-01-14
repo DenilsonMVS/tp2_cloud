@@ -1,3 +1,4 @@
 flask
 pandas
 fpgrowth_py
+flask_cors

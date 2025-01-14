@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: recommender
   labels:
     app: flask-app
 spec:
@@ -18,16 +18,16 @@ spec:
         - name: flask-app
           image: thenewson/playlists-recommender-system:0.1
           ports:
-            - containerPort: 8000
+            - containerPort: 52015
           env:
             - name: FLASK_ENV
               value: "production"
           resources:
             limits:
-              memory: "512Mi"
+              memory: "128Mi"
               cpu: "500m"
             requests:
-              memory: "256Mi"
+              memory: "16Mi"
               cpu: "250m"
 ---
 apiVersion: v1
@@ -39,6 +39,6 @@ spec:
     app: flask-app
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 52015
+      targetPort: 52015
   type: LoadBalancer

@@ -55,7 +55,7 @@ def home():
                     })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('recommendations').innerText = 'Recommended Songs: ' + data.recommendations.join(', ');
+                        document.getElementById('recommendations').innerText = 'Recommended Songs: ' + data.songs.join(', ');
                     });
                 }
             </script>
